@@ -108,7 +108,7 @@ def minEffort(puzzle):
     # creates a dictionary of each vertex in graph and an infinity value as the value of those keys
     distances = {vertex: float('infinity') for vertex in graph}
     route = {vertex: '' for vertex in graph}
-    leastEffort = float('infinity')
+    maxEffort = -1
 
     # creates a queue with starting tuple of starting nodes weight and name,
     # used to represent node that is waiting to be looked at
@@ -131,7 +131,10 @@ def minEffort(puzzle):
         # loops through each neighbor of current node
         for neighbor, weight in graph.getValAtKey(current_vertex).items():
 
-            distance = current_distance + weight
+            if neighbor == 'A':
+                continue
+
+            distance = current_distance + abs(graph.getValAtKey(neighbor)[current_vertex] - weight)
 
             # if the distance to the neighbor node is less than what has been calculated
             if distance < distances[neighbor]:
@@ -142,6 +145,7 @@ def minEffort(puzzle):
 
                 # when there is a shortest distance, will store the node that it came from
                 # that provided that shortest distance
+                # if route[neighbor] != 'A':
                 route[neighbor] = current_vertex
 
                 # push the node with this distance onto pq, since we know need to calculate
@@ -150,20 +154,20 @@ def minEffort(puzzle):
                 heapq.heappush(priorityQueue, (distance, neighbor))
 
         # after the while loop ends store the lowest distance nodes
-
+    print(route)
     while endVertex != 'A':
 
         endVertexWeight = graph.getValAtKey(route[endVertex])[endVertex]
         parentNodeWeight = graph.getValAtKey(endVertex)[route[endVertex]]
         effort = abs(endVertexWeight - parentNodeWeight)
-        if leastEffort > effort:
-            leastEffort = effort
+        if maxEffort < effort:
+            maxEffort = effort
         endVertex = route[endVertex]
 
     # calculate all paths by absolute distance to get the smallest value
     graph.printData()
     print(route)
-    return leastEffort
+    return maxEffort
 
 
 if __name__ == '__main__':
